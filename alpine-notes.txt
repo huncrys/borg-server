@@ -1,8 +1,0 @@
-apk add py3-pip
-apk add openssl-dev
-apk add build-base
-apk add python3-dev
-apk add acl-dev
-apk add linux-headers
-apk add openssh-server
-ssh-keygen -A
