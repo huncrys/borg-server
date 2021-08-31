@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p /config/etc/ssh /config/users /backups
+mkdir -p /config/ssh /config/users /backups
 chmod 711 /backups
 
 if [ ! -f /config/ssh/ssh_host_dsa_key ]; then
