@@ -1,27 +1,26 @@
 #!/bin/bash
 
-mkdir -p /opt/borgs/etc/ssh/ >/dev/null 2>&1
-mkdir -p /opt/borgs/etc/users/ >/dev/null 2>&1
-if [ ! -f /opt/borgs/etc/ssh/ssh_host_dsa_key ]; then
-    echo "doing SSH key creation"
-    ssh-keygen -A
-    mv /etc/ssh/ssh*key* /opt/borgs/etc/ssh/
-    ln -sf /opt/borgs/etc/ssh/* /etc/ssh 2>/dev/null 2>&1
-fi
-
-mkdir -p /backups >/dev/null 2>&1
+mkdir -p /config/etc/ssh /config/users /backups
 chmod 711 /backups
 
-# check user list
-echo "Start user check"
-for i in /opt/borgs/etc/users/*; do
-    thisuser=$(basename $i)
-    if [ "x$thisuser" == "x*" ]; then
-        echo "No users exist yet"
-    else
-        echo "Checking user $thisuser"
-        createuser $thisuser "$(cat /opt/borgs/etc/users/$thisuser)"
-    fi
-done
+if [ ! -f /config/ssh/ssh_host_dsa_key ]; then
+    ssh-keygen -A 2>&1 > /dev/null
+    mv /etc/ssh/ssh*key* /config/ssh/
+    ln -sf /config/ssh/* /etc/ssh
+fi
 
-exec /usr/sbin/sshd -D -e
+if [ "$1" = "/usr/sbin/sshd" ]; then
+    # check user list
+    echo "Start user check"
+    for i in /config/users/*; do
+        thisuser=$(basename "$i")
+        if [ "x$thisuser" == "x*" ]; then
+            echo "No users exist yet"
+        else
+            echo "Checking user $thisuser"
+            createuser "$thisuser" "$(cat /config/users/$thisuser)"
+        fi
+    done
+fi 
+
+exec "$@"

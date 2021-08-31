@@ -1,26 +1,15 @@
-# docker-borg-backup-secure
+# Docker Borg Server
 
-Building on ginkels container, this is an attempt at making a docker container with added security for the borg backup software.
+Building on takigama's container, this is an attempt at making a Docker container with added security for the Borg backup software.
 
-For more information about Borg Backup, an excellent deduplicating backup, refer to: <https://www.borgbackup.org/>
-
-The idea behind this container is to stop users from being able to modify backups except by using the borg command, to achieve this the following occurs:
-
-* all users get a rbash shell with borg being their only command
-* all users run with a seperate UID - for my purposes, each server/workstation that backs up to this machine would be a seperate user
-
-## Why?
-
-Im very paranoid about push backups and those that occur over ssh without passwords are scary. Often i'll be backing up publicly hosted VM's and the idea they can just ssh back to an internal host really increased my fear factor. This is my attempt at making that as safe as possible.
-
-Ultimately, i've found borg to be quite good so i think its worth the effort.
+For more information about Borg Backup, an excellent deduplicating backup solution, refer to: <https://www.borgbackup.org/>
 
 ## Usage
 
-The best tag to pull currently is alpine-multiarch-latest. As its name suggests its based on alpine and it supports most common architectures (386, x86_64, arm, arm64, etc). This tag is updated manually rather then being built from an autobuild on docker hub as I cannot figure out how to make autobuilt work on docker hub with multiple architectures! Ultimately alpine will become master soon enough as I'll exit the debian based image.
+The best tag to pull currently is `latest`.
 
 ```shell
-$ docker run --name borg -v <borg_backup_volume>:/backups -v <borg_user_list_location>:/opt/borgs/etc takigama/secured-borg-server:alpine-multiarch-latest
+$ docker run --name borg -v borg_backup:/backups -v /path/to/config:/config huncrys/server:latest
 doing SSH key creation
 ```
 
@@ -33,7 +22,7 @@ Usage: createuser username ssh-key
 
 ```shell
 $ docker exec borg createuser john "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDSkT3A1j89RT/540ghIMHXIVwNlAEM3WtmqVG7YN/wYwtsJ8iCszg4/lXQsfLFxYmEVe8L9atgtMGCi5QdYPl4X/c+5YxFfm88Yjfx+2xEgUdOr864eaI22yaNMQ0AlyilmK+asewfaszxcvzxcvzxcv+MCUWo+cyBFZVGOzrjJGEcHewOCbVs+IJWBFSi6w1enbKGc+RY9KrnzeDKWWqzYnNofiHGVFAuMxrmZOasqlTIKiC2UK3RmLxZicWiQmPnpnjJRo7pL0oYM9r/sIWzD6i2S9szDy6aZ john@host"
-User john created, backup path is /backups/john/repo/
+User john created, backup path is /backups/john/repo
 ```
 
 To delete a user - I might write a script for this, but currently this involes:
@@ -44,16 +33,16 @@ $ docker exec borg deluser <username>
 # if you wish to delete their data:
 $ docker exec borg rm -rf /backups/<username>            
 # if you wish to delete their key:
-$ docker exec borg rm -f /opt/borgs/etc/users/<username>
+$ docker exec borg rm -f /config/users/<username>
 ```
 
 ## Layout
 
-The container users two volumes, /backups and /etc/borgs/etc/. If you want persistent data, you'll need both
+The container uses two volumes, `/backups` and `/config`. If you want persistent data, you'll need both:
 
-* /etc/borgs/etc/users/$username - each is a pubkey for $username, ultimately its our list of active users
+* /config/users/$username - each is a pubkey for $username, ultimately its our list of active users
 * /backups/$username - permission 0710 (user cant write in their own home directory or even see the files that exist there. Home directory is owned by root)
-* /backups/$username/repo - loocation for actual backups (user writable/readable, should be the only location the user can actually see anything)
+* /backups/$username/repo - location for actual backups (user writable/readable, should be the only location the user can actually see anything)
 
 ## Attributions
 

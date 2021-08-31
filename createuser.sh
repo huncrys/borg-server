@@ -30,50 +30,42 @@ fi
 username=$(clean $1)
 
 if [ ${#username} -gt 12 ]; then
-    echo "Username cant be greater than 12 characters"
+    echo "Username can't be longer than 12 characters"
     exit 1
 fi
 
 job="unknown"
-adduser -D -H -g "Borg Backup $username" $username -s /bin/rbash -h /backups/$username/ >/dev/null 2>&1
+adduser -D -H -g "Borg Backup $username" "$username" -h "/backups/$username" >/dev/null 2>&1
 if [ $? == 0 ]; then
-    mkdir -p /backups/$username/repo/
     job="created"
 else
     # the assumption is a non-0 exit status is "user exists".. should really be a bit more checking on that
     job="checked"
-    echo User exists, $username, enforcing settings
+    echo "User exists, $username, enforcing settings"
 fi
 
-# on alpine, for some reason the account is locked by default
-passwd -u $username >/dev/null 2>&1
+mkdir -p "/backups/$username/repo"
 
-# we really should check $2 is what it says it is.
-echo $2 >/opt/borgs/etc/users/$username
+# on alpine, for some reason the account is locked by default
+passwd -u "$username" 2>&1 > /dev/null
+
+sshkey=$(echo $2 | sed -E 's/.*(ssh-.*)/\1/')
+echo "command=\"cd \\\"/backups/$username/repo\\\" && borg serve --restrict-to-path \\\"/backups/$username/repo\\\"\",restrict $sshkey" > /config/users/$username
 
 # make sure the user key is basically unmodifable
-chown root:$username /opt/borgs/etc/users/$username
-chmod 640 /opt/borgs/etc/users/$username
+chown "root:$username" "/config/users/$username"
+chmod 640 "/config/users/$username"
 
 # make root own the user home directory, but group is for the user
-chown root:$username /backups/$username
+chown "root:$username" "/backups/$username"
 
 # make the user home directory un-readable by anyone except root
-chmod 710 /backups/$username
-
-# create the rbash profile (even if it already exists)
-cp -f /opt/borgs/rbash_profile /backups/$username/.bash_profile
-
-# make the profile unmodifable
-chown root:root /backups/$username/.bash_profile
-
-# allow the profile to be read by all
-chmod 644 /backups/$username/.bash_profile
+chmod 710 "/backups/$username"
 
 # ensure permissions for the repo directory are writable and owned by the user doing the backups
-chown -R $username:$username /backups/$username/repo/
+chown -R "$username:$username" "/backups/$username/repo"
 
 # set permissions for the user
-chmod -R 770 /backups/$username/repo/
+chmod -R 770 "/backups/$username/repo"
 
-echo User $username $job, backup path is /backups/$username/repo/
+echo "User $username $job, backup path is /backups/$username/repo"
