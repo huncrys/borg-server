@@ -9,53 +9,47 @@ function usage {
 # clean our username
 function clean {
     STRING=$1
-    CLEAN="${STRING//_/}" && \
-    CLEAN="${CLEAN// /_}" && \
-    CLEAN="${CLEAN//[^a-zA-Z0-9]/}" && \
-    CLEAN="${CLEAN,,}"
+    CLEAN="${STRING//_/}" &&
+        CLEAN="${CLEAN// /_}" &&
+        CLEAN="${CLEAN//[^a-zA-Z0-9]/}" &&
+        CLEAN="${CLEAN,,}"
     echo $CLEAN
 }
 
-if [ "x$1" == "x" ]
-then
+if [ "x$1" == "x" ]; then
     usage
     exit 1
 fi
 
-if [ "x$2" == "x" ]
-then
+if [ "x$2" == "x" ]; then
     usage
     exit 1
 fi
-
 
 # "scrub" the username
 username=$(clean $1)
 
-if [ ${#username} -gt 12 ]
-then
+if [ ${#username} -gt 12 ]; then
     echo "Username cant be greater than 12 characters"
     exit 1
 fi
 
-
 job="unknown"
-adduser  -D -H -g "Borg Backup $username" $username -s /bin/rbash -h /backups/$username/ > /dev/null 2>&1
-if [ $? == 0 ]
-then
+adduser -D -H -g "Borg Backup $username" $username -s /bin/rbash -h /backups/$username/ >/dev/null 2>&1
+if [ $? == 0 ]; then
     mkdir -p /backups/$username/repo/
-    job="create"
-else 
+    job="created"
+else
     # the assumption is a non-0 exit status is "user exists".. should really be a bit more checking on that
     job="checked"
     echo User exists, $username, enforcing settings
 fi
 
 # on alpine, for some reason the account is locked by default
-passwd -u $username > /dev/null 2>&1
+passwd -u $username >/dev/null 2>&1
 
 # we really should check $2 is what it says it is.
-echo $2 > /opt/borgs/etc/users/$username
+echo $2 >/opt/borgs/etc/users/$username
 
 # make sure the user key is basically unmodifable
 chown root:$username /opt/borgs/etc/users/$username
@@ -83,6 +77,3 @@ chown -R $username:$username /backups/$username/repo/
 chmod -R 770 /backups/$username/repo/
 
 echo User $username $job, backup path is /backups/$username/repo/
-
-
-
