@@ -1,4 +1,4 @@
-FROM alpine:edge
+FROM alpine:3.14
 
 RUN mkdir -p \
         /config/ssh \
@@ -10,6 +10,8 @@ RUN mkdir -p \
         py3-packaging \
         tini \
         tzdata \
+    && apk upgrade --no-cache --repository https://dl-cdn.alpinelinux.org/alpine/edge/community \
+        borgbackup \
     && sed -i \
         -e 's/^#PasswordAuthentication.*$/PasswordAuthentication no/g' \
         -e 's/^#PermitRootLogin.*$/PermitRootLogin no/g' \
