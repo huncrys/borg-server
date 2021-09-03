@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # this script will get prettier, I promise
 
@@ -47,7 +47,7 @@ fi
 mkdir -p "/backups/$username/repo"
 
 # on alpine, for some reason the account is locked by default
-passwd -u "$username" 2>&1 > /dev/null
+passwd -u "$username" &> /dev/null
 
 sshkey=$(echo $2 | sed -E 's/.*(ssh-.*)/\1/')
 echo "command=\"cd \\\"/backups/$username/repo\\\" && borg serve --restrict-to-path \\\"/backups/$username/repo\\\"\",restrict $sshkey" > /config/users/$username
