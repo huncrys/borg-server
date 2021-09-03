@@ -24,4 +24,4 @@ if [ "$1" = "/usr/sbin/sshd" ]; then
     done
 fi 
 
-exec "$@"
+exec $@

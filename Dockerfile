@@ -6,7 +6,7 @@ RUN set -x \
     && mkdir -p \
         /config/ssh \
         /config/users \
-    && apk add -U --no-cache bash borgbackup openssh-server tzdata \
+    && apk add --no-cache bash borgbackup openssh-server tini tzdata \
     && sed -i \
         -e 's/^#PasswordAuthentication.*$/PasswordAuthentication no/g' \
         -e 's/^#PermitRootLogin.*$/PermitRootLogin no/g' \
@@ -23,5 +23,5 @@ ADD ./createuser.sh /usr/sbin/createuser
 RUN chmod a+x /usr/sbin/createuser
 
 EXPOSE 22
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
 CMD ["/usr/sbin/sshd", "-D", "-e"]
