@@ -9,7 +9,7 @@ For more information about Borg Backup, an excellent deduplicating backup soluti
 The best tag to pull currently is `latest`.
 
 ```shell
-$ docker run --name borg -v borg_backup:/backups -v /path/to/config:/config huncrys/server:latest
+$ docker run --name borg -v borg_backup:/backups -v /path/to/config:/config huncrys/borg-server:latest
 doing SSH key creation
 ```
 

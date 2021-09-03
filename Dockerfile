@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:edge
 
 RUN mkdir -p \
         /config/ssh \
@@ -7,7 +7,7 @@ RUN mkdir -p \
         bash \
         borgbackup \
         openssh-server \
-        # py3-packaging \
+        py3-packaging \
         tini \
         tzdata \
     && sed -i \
