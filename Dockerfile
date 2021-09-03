@@ -1,12 +1,15 @@
 FROM alpine:3.14
 
-ENV BORG_VERSION=1.1.13
-
-RUN set -x \
-    && mkdir -p \
+RUN mkdir -p \
         /config/ssh \
         /config/users \
-    && apk add --no-cache bash borgbackup openssh-server tini tzdata \
+    && apk add --no-cache \
+        bash \
+        borgbackup \
+        openssh-server \
+        # py3-packaging \
+        tini \
+        tzdata \
     && sed -i \
         -e 's/^#PasswordAuthentication.*$/PasswordAuthentication no/g' \
         -e 's/^#PermitRootLogin.*$/PermitRootLogin no/g' \
