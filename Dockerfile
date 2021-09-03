@@ -16,7 +16,7 @@ RUN mkdir -p \
         -e 's/^#PasswordAuthentication.*$/PasswordAuthentication no/g' \
         -e 's/^#PermitRootLogin.*$/PermitRootLogin no/g' \
         -e 's/^X11Forwarding yes$/X11Forwarding no/g' \
-        -e 's/^#LogLevel.*$/LogLevel ERROR/g' \
+        -e 's/^#LogLevel.*$/LogLevel INFO/g' \
         -e 's/^#PubkeyAuthentication.*$/PubkeyAuthentication yes/g' \
         -e 's/^AuthorizedKeysFile.*$/AuthorizedKeysFile \/config\/users\/%u/g' \
         -e 's/^#ClientAliveInterval.*$/ClientAliveInterval 10/g' \

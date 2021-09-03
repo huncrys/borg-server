@@ -11,15 +11,13 @@ fi
 ln -sf /config/ssh/* /etc/ssh
 
 if [ "$1" = "/usr/sbin/sshd" ]; then
-    # check user list
-    echo "Start user check"
+
     for i in /config/users/*; do
         thisuser=$(basename "$i")
         if [ "x$thisuser" == "x*" ]; then
             echo "No users exist yet"
         else
-            echo "Checking user $thisuser"
-            createuser "$thisuser" "$(cat /config/users/$thisuser)"
+            createuser "$thisuser" "$(cat "/config/users/$thisuser")" > /dev/null
         fi
     done
 fi 
