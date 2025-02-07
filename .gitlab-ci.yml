@@ -5,3 +5,9 @@ include:
   - component: $CI_SERVER_FQDN/oaklab/ci-templates/docker-publish@~latest
     inputs:
       licenses: Apache-2.0
+      architectures:
+        - amd64
+        - "386"
+        - arm64
+        - arm/v7
+        - arm/v6
