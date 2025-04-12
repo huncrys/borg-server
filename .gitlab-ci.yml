@@ -5,7 +5,7 @@ include:
   - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@8
     inputs:
       licenses: Apache-2.0
-      architectures:
+      platforms:
         - linux/amd64
         - linux/386
         - linux/arm64
