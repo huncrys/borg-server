@@ -2,7 +2,7 @@ variables:
   CI_DOCKERHUB_IMAGE: huncrys/borg-server
 
 include:
-  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@8
+  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@10
     inputs:
       licenses: Apache-2.0
       platforms:
@@ -12,5 +12,5 @@ include:
         - linux/arm/v7
         - linux/arm/v6
         - linux/ppc64le
-        - linux/riscv64
+        #- linux/riscv64 # TODO: Re-enable when latest borgbackup version is available for riscv64
         - linux/s390x
