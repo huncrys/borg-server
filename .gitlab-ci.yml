@@ -2,7 +2,7 @@ variables:
   CI_DOCKERHUB_IMAGE: huncrys/borg-server
 
 include:
-  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@10
+  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@11
     inputs:
       licenses: Apache-2.0
       platforms:
