@@ -2,46 +2,41 @@
 
 # this script will get prettier, I promise
 
-function usage {
+set -euo pipefail
+
+usage() {
     echo "Usage: $0 username ssh-key"
 }
 
 # clean our username
-function clean {
-    STRING=$1
-    CLEAN="${STRING//_/}" &&
-        CLEAN="${CLEAN// /_}" &&
-        CLEAN="${CLEAN//[^a-zA-Z0-9]/}" &&
-        CLEAN="${CLEAN,,}"
-    echo $CLEAN
+clean() {
+    local username=$1
+    username="${username//_/}"
+    username="${username// /_}"
+    username="${username//[^a-zA-Z0-9]/}"
+    username="${username,,}"
+    echo "$username"
 }
 
-if [ "x$1" == "x" ]; then
-    usage
-    exit 1
-fi
-
-if [ "x$2" == "x" ]; then
+if [[ -z "$1" ]] || [[ -z "$2" ]]; then
     usage
     exit 1
 fi
 
 # "scrub" the username
-username=$(clean $1)
+username=$(clean "$1")
 
-if [ ${#username} -gt 12 ]; then
+if [[ ${#username} -gt 12 ]]; then
     echo "Username can't be longer than 12 characters"
     exit 1
 fi
 
 job="unknown"
-adduser -D -H -g "Borg Backup $username" "$username" -h "/backups/$username" >/dev/null 2>&1
-if [ $? == 0 ]; then
+if adduser -D -H -g "Borg Backup $username" "$username" -h "/backups/$username" >/dev/null 2>&1; then
     job="created"
 else
     # the assumption is a non-0 exit status is "user exists".. should really be a bit more checking on that
     job="checked"
-    echo "User exists, $username, enforcing settings"
 fi
 
 mkdir -p "/backups/$username/repo"
@@ -49,8 +44,8 @@ mkdir -p "/backups/$username/repo"
 # on alpine, for some reason the account is locked by default
 passwd -u "$username" &> /dev/null
 
-sshkey=$(echo $2 | sed -E 's/.*(ssh-.*)/\1/')
-echo "command=\"cd \\\"/backups/$username/repo\\\" && borg serve --restrict-to-path \\\"/backups/$username/repo\\\"\",restrict $sshkey" > /config/users/$username
+sshkey=$(sed -E 's/.*(ssh-.*)/\1/' <<<"$2")
+echo "command=\"cd \\\"/backups/$username/repo\\\" && borg serve --restrict-to-path \\\"/backups/$username/repo\\\"\",restrict $sshkey" > /config/users/"$username"
 
 # make sure the user key is basically unmodifable
 chown "root:$username" "/config/users/$username"
