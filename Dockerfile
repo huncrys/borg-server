@@ -2,7 +2,7 @@
 
 FROM alpine:3.23@sha256:865b95f46d98cf867a156fe4a135ad3fe50d2056aa3f25ed31662dff6da4eb62
 
-# renovate: datasource=repology depName=alpine_3_22/borgbackup versioning=loose
+# renovate: datasource=repology depName=alpine_3_23/borgbackup versioning=loose
 ARG BORG_VERSION=1.4.3-r0
 
 RUN mkdir -p \
@@ -10,7 +10,7 @@ RUN mkdir -p \
         /config/users \
     && apk add --no-cache \
         bash \
-        borgbackup="${BORG_VERSION}" \
+        borgbackup~"${BORG_VERSION%-r*}" \
         openssh-server \
         py3-packaging \
         tini \
@@ -28,9 +28,8 @@ RUN mkdir -p \
 
 VOLUME ["/backups", "/config"]
 
-ADD ./entrypoint.sh /
-ADD ./createuser.sh /usr/sbin/createuser
-RUN chmod a+x /usr/sbin/createuser
+COPY ./entrypoint.sh /
+COPY ./createuser.sh /usr/sbin/createuser
 
 EXPOSE 22
 ENTRYPOINT ["/sbin/tini", "--", "/entrypoint.sh"]
