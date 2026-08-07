@@ -2,8 +2,8 @@ variables:
   CI_DOCKERHUB_IMAGE: huncrys/borg-server
 
 include:
-  - component: $CI_SERVER_FQDN/oaklab/ci-templates/hadolint@11
-  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@11
+  - component: $CI_SERVER_FQDN/oaklab/ci-templates/hadolint@12
+  - component: $CI_SERVER_FQDN/oaklab/ci-templates/oci-publish@12
     inputs:
       licenses: Apache-2.0
       platforms:
