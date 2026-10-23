@@ -2,8 +2,8 @@
 
 FROM alpine:3.24@sha256:71e9b7bae160ba167fa17414401b94cbcdaf3c32feeab9298bd794a2a0614c35
 
-# renovate: datasource=repology depName=alpine_3_23/borgbackup versioning=loose
-ARG BORG_VERSION=1.4.4-r0
+# renovate: datasource=repology depName=alpine_3_24/borgbackup versioning=loose
+ARG BORG_VERSION=1.4.5-r0
 
 RUN mkdir -p \
         /config/ssh \
